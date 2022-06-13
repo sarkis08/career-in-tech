@@ -1,4 +1,3 @@
-from tkinter.ttk import Style
 import dash
 from dash import html, dcc
 import dash_bootstrap_components as dbc
