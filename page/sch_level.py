@@ -178,8 +178,7 @@ def update_grpah(selected_schname, selected_class):
     if len(selected_schname) == 0:
         return dash.no_update
     else:
-        sdf = df_[((df_.schoolname == selected_schname) | (df_['class'] == selected_class)) | ((df_.schoolname == selected_schname)
-                  & (df_['class'] == selected_class))]
+        sdf = df_[((df_.schoolname == selected_schname) & (df_['class'] == selected_class)) ]
         # print(sdf.head())
         std_df = sdf[[
             "gender", "have you heard/or learnt  about data science prior to this session?"]]
