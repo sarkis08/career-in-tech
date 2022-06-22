@@ -54,7 +54,7 @@ layout = dbc.Container([
                                 f"Overall Training Performance Score"),
                             dbc.CardBody(
                                 [
-                                    html.H4(df_["training_performance_score"].mean().round(2),
+                                    html.H4({}, id="tl_perf",
                                             className="card-title",
                                             style={"textAlign": "center"}),
                                 ]
@@ -175,7 +175,8 @@ def set_classes_options(chosen_schname):
 
 
 @app.callback(
-    [Output('graph-container1', 'children'),
+    [Output('tl_perf','children'),
+     Output('graph-container1', 'children'),
      Output('graph-container2', 'children'),
      Output('graph-container3', 'children'),
      Output('graph-container4', 'children'),
@@ -185,7 +186,7 @@ def set_classes_options(chosen_schname):
      Output('graph-container8', 'children'), ],
     Input('schname-dpdn', 'value'),
     Input('class-dpdn', 'value'),
-    prevent_initial_call=True
+    #prevent_initial_call=True
 )
 def update_grpah(selected_schname, selected_class):
     dff = df_.copy()
@@ -195,6 +196,10 @@ def update_grpah(selected_schname, selected_class):
         
         sdf = dff[(dff["schoolname"] == selected_schname) & (dff['class'].isin(selected_class))]
         # print(sdf.head())
+        # Overall Training Performance
+        totl_perf = dff["training_performance_score"].mean().round(2)
+        totl_perf = totl_perf.astype(str) + " %"
+
         std_df = sdf[[
             "gender", "have you heard/or learnt  about data science prior to this session?"]]
         std_heard = std_df.groupby(
@@ -299,7 +304,7 @@ def update_grpah(selected_schname, selected_class):
                                                 'Good': 'yellow','Excellent': 'darkblue'}, height=400)
         fig_std_rate_training.update_traces(textinfo='percent+label',)
     
-    return [dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
+    return [totl_perf, dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
             dcc.Graph(id="fig3", figure=fig_std_udt,), dcc.Graph(
                 id="fig4", figure=fig_std_part,),
             dcc.Graph(id="fig5", figure=fig_std_recommend,), dcc.Graph(
