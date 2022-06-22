@@ -29,8 +29,8 @@ navbar = dbc.Navbar(
 
 
         ),
-        dbc.NavItem(dbc.NavLink("Overall", href="/", style={"color": "white"}) ),
-        dbc.NavItem(dbc.NavLink("School_Level", href="/school_level",style={"color": "white"}) ),
+#        dbc.NavItem(dbc.NavLink("Overall", href="/", style={"color": "white"}) ),
+#        dbc.NavItem(dbc.NavLink("School_Level", href="/school_level",style={"color": "white"}) ),
     ],
 
     color="dark",
@@ -55,9 +55,9 @@ app.layout = html.Div([
               )
 def render_page_content(pathname):
     if pathname == '/':
-        return overview.layout
-    elif pathname == '/school_level':
         return sch_level.layout
+#    elif pathname == '/school_level':
+#       return sch_level.layout
     # If the user tries to reach a different page, return a 404 message
     else:
         return html.Div(

@@ -20,12 +20,13 @@ layout = dbc.Container([
                 style={"textAlign": "center"}),
         dbc.Row([
             html.H3("Filtering"),
+
             dbc.Col([
                 html.Pre(children="School Name", style={"fontSize": "100%"}),
                 dcc.Dropdown(
                     id='schname-dpdn',
                     placeholder="Select School",
-                    value='SchoolName',
+                    value=None,
                     clearable=True,
                     persistence=True,
                     persistence_type='session',
@@ -41,18 +42,39 @@ layout = dbc.Container([
                     placeholder="Select Class",
                     clearable=True,
                     persistence=True,
+                    multi=True,
                     persistence_type='session',
                     value=[],
                     options=[],
 
                 )
-            ], width={"size": 3}),
+            ], width={"size": 4}),
+            dbc.Col([
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                f"Overall Training Performance Score"),
+                            dbc.CardBody(
+                                [
+                                    html.H4(df_["training_performance_score"].mean().round(2),
+                                            className="card-title",
+                                            style={"textAlign": "center"}),
+                                ]
+                            ),
+                        ],
+                        color="success",
+                        outline=True,
+
+                    )],
+                    width={'size': 4, }),
         ], ),  # end of row
         html.Br(),
         html.Br(),
         dbc.Row(
             [
+
                 html.H5("Did students learn anything from training?"),
+
                 dbc.Col([
                         html.Li(
                             "Percentage of students who heard/never heard about data science before."),
@@ -93,15 +115,16 @@ layout = dbc.Container([
                         "Percentage of students who would recommend training to friends and schoolmates"),
                     html.Div(id='graph-container5', children=[],),
 
-                    ],
+                ],
                     width={"size": 4, },
-                    ),
+                ),
             ],),
         html.Hr(),
         html.Br(),
         dbc.Row(
             [
-                html.H5("Do students prefer further training or feel comfortable choosing a career in technology?"),
+                html.H5(
+                    "Do students prefer further training or feel comfortable choosing a career in technology?"),
                 dbc.Col([
                         html.Li(
                             "Percentage of students who would like further training"),
@@ -128,14 +151,7 @@ layout = dbc.Container([
                             "How is the Quality of the training rated?"),
                         html.Div(id='graph-container8', children=[],),
                         ],
-                        width={"size": 6, },
-                        ),
-                dbc.Col([
-                        html.Li(
-                            "Overall Training Performance Score at School Level"),
-                        html.Div(id='graph-container9', children=[],),
-                        ],
-                        width={"size": 6, },
+                        width={"size": 6, "offset": 3 },
                         ),
             ],),
     ]),
@@ -168,17 +184,18 @@ def set_classes_options(chosen_schname):
      Output('graph-container5', 'children'),
      Output('graph-container6', 'children'),
      Output('graph-container7', 'children'),
-     Output('graph-container8', 'children'),
-     Output('graph-container9', 'children'), ],
+     Output('graph-container8', 'children'), ],
     Input('schname-dpdn', 'value'),
     Input('class-dpdn', 'value'),
     prevent_initial_call=True
 )
 def update_grpah(selected_schname, selected_class):
-    if len(selected_schname) == 0:
+    dff = df_.copy()
+    if len(selected_class) == 0:
         return dash.no_update
     else:
-        sdf = df_[((df_.schoolname == selected_schname) & (df_['class'] == selected_class)) ]
+        
+        sdf = dff[(dff["schoolname"] == selected_schname) & (dff['class'].isin(selected_class))]
         # print(sdf.head())
         std_df = sdf[[
             "gender", "have you heard/or learnt  about data science prior to this session?"]]
@@ -205,73 +222,88 @@ def update_grpah(selected_schname, selected_class):
                                 text=std_learnt['percentage'].apply(
                                     lambda x: '{0:1.2f}%'.format(x)),
                                 barmode="group", height=400, color_discrete_map={"No": "deeppink", "Yes": "Lightgreen"})
-        
-        std_udt_df = sdf[["gender", "was the presentation useful and/or simple to implement?"]]
-        std_udt_concep = std_udt_df.groupby(['gender', 'was the presentation useful and/or simple to implement?']).size().reset_index()
-        std_udt_concep['percentage'] = std_udt_df.groupby(['gender', 'was the presentation useful and/or simple to implement?']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
-        std_udt_concep.columns = ['gender', 'variables', 'counts', 'percentage']
+
+        std_udt_df = sdf[[
+            "gender", "was the presentation useful and/or simple to implement?"]]
+        std_udt_concep = std_udt_df.groupby(
+            ['gender', 'was the presentation useful and/or simple to implement?']).size().reset_index()
+        std_udt_concep['percentage'] = std_udt_df.groupby(
+            ['gender', 'was the presentation useful and/or simple to implement?']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
+        std_udt_concep.columns = [
+            'gender', 'variables', 'counts', 'percentage']
         # Bar Chart
-        fig_std_udt = px.bar(std_udt_concep, x='gender', y='percentage', color='variables', 
-            text=std_udt_concep['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), 
-            barmode="group", color_discrete_sequence=["deeppink","palegreen",], height=400)
+        fig_std_udt = px.bar(std_udt_concep, x='gender', y='percentage', color='variables',
+                             text=std_udt_concep['percentage'].apply(
+                                 lambda x: '{0:1.2f}%'.format(x)),
+                             barmode="group", color_discrete_sequence=["deeppink", "palegreen", ], height=400)
 
         # participation of student
         std_part_df = sdf[["gender", "was the training interactive enough?"]]
-        std_part = std_part_df.groupby(['gender', 'was the training interactive enough?']).size().reset_index()
-        std_part['percentage'] = std_part_df.groupby(['gender', 'was the training interactive enough?']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
+        std_part = std_part_df.groupby(
+            ['gender', 'was the training interactive enough?']).size().reset_index()
+        std_part['percentage'] = std_part_df.groupby(['gender', 'was the training interactive enough?']).size(
+        ).groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
         std_part.columns = ['gender', 'variables', 'counts', 'percentage']
         # Bar Chart
-        fig_std_part = px.bar(std_part, x='gender', y='percentage', color='variables', 
-            text=std_part['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), 
-            barmode="stack", height=400, color_discrete_sequence=["lightpink","palegreen",])
-        
+        fig_std_part = px.bar(std_part, x='gender', y='percentage', color='variables',
+                              text=std_part['percentage'].apply(
+                                  lambda x: '{0:1.2f}%'.format(x)),
+                              barmode="stack", height=400, color_discrete_sequence=["lightpink", "palegreen", ])
+
         # Recommend training to friends and schoolmates
-        std_recommend_df = sdf[["gender", "would you recommend the training to friends and schoolmates?"]]
-        std_recommend = std_recommend_df.groupby(['gender', 'would you recommend the training to friends and schoolmates?']).size().reset_index()
-        std_recommend['percentage'] = std_recommend_df.groupby(['gender', 'would you recommend the training to friends and schoolmates?']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
+        std_recommend_df = sdf[[
+            "gender", "would you recommend the training to friends and schoolmates?"]]
+        std_recommend = std_recommend_df.groupby(
+            ['gender', 'would you recommend the training to friends and schoolmates?']).size().reset_index()
+        std_recommend['percentage'] = std_recommend_df.groupby(['gender', 'would you recommend the training to friends and schoolmates?']).size(
+        ).groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
         std_recommend.columns = ['gender', 'variables', 'counts', 'percentage']
         # Bar Chart
-        fig_std_recommend = px.bar(std_recommend, x='gender', y='percentage', color='variables', 
-            text=std_recommend['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), 
-            barmode="group", height=400, color_discrete_sequence=["deeppink","palegreen",])
+        fig_std_recommend = px.bar(std_recommend, x='gender', y='percentage', color='variables',
+                                   text=std_recommend['percentage'].apply(
+                                       lambda x: '{0:1.2f}%'.format(x)),
+                                   barmode="group", height=400, color_discrete_sequence=["deeppink", "palegreen", ])
 
         # Percentage of students who would like further training
-        std_further_df = sdf[["gender", "would you like to have advance training sessions?"]]
-        std_further = std_further_df.groupby(['gender', 'would you like to have advance training sessions?']).size().reset_index()
-        std_further['percentage'] = std_further_df.groupby(['gender', 'would you like to have advance training sessions?']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
+        std_further_df = sdf[[
+            "gender", "would you like to have advance training sessions?"]]
+        std_further = std_further_df.groupby(
+            ['gender', 'would you like to have advance training sessions?']).size().reset_index()
+        std_further['percentage'] = std_further_df.groupby(['gender', 'would you like to have advance training sessions?']).size(
+        ).groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
         std_further.columns = ['gender', 'variables', 'counts', 'percentage']
         # Bar Chart
-        fig_std_further = px.bar(std_further, x='gender', y='percentage', color='variables', 
-            text=std_further['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), 
-            barmode="group", color_discrete_map={"No":"deeppink", "Yes":"Lightgreen"}, height=400)
+        fig_std_further = px.bar(std_further, x='gender', y='percentage', color='variables',
+                                 text=std_further['percentage'].apply(
+                                     lambda x: '{0:1.2f}%'.format(x)),
+                                 barmode="group", color_discrete_map={"No": "deeppink", "Yes": "Lightgreen"}, height=400)
 
         # Percentage of Students who feel comfortable choosing a career in technology
-        std_choose_df = sdf[["gender", "after this training, do you feel comfortable choosing a career in technology?"]]
-        std_choose = std_choose_df.groupby(['gender', 'after this training, do you feel comfortable choosing a career in technology?']).size().reset_index()
-        std_choose['percentage'] = std_choose_df.groupby(['gender', 'after this training, do you feel comfortable choosing a career in technology?']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
+        std_choose_df = sdf[[
+            "gender", "after this training, do you feel comfortable choosing a career in technology?"]]
+        std_choose = std_choose_df.groupby(
+            ['gender', 'after this training, do you feel comfortable choosing a career in technology?']).size().reset_index()
+        std_choose['percentage'] = std_choose_df.groupby(['gender', 'after this training, do you feel comfortable choosing a career in technology?']).size(
+        ).groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
         std_choose.columns = ['gender', 'variables', 'counts', 'percentage']
         # Bar Chart
-        fig_std_choose = px.bar(std_choose, x='gender', y='percentage', color='variables', 
-            text=std_choose['percentage'].apply(lambda x: '{0:1.2f}%'.format(x)), 
-            barmode="group", height=400, color_discrete_sequence=["lightpink","palegreen",])
+        fig_std_choose = px.bar(std_choose, x='gender', y='percentage', color='variables',
+                                text=std_choose['percentage'].apply(
+                                    lambda x: '{0:1.2f}%'.format(x)),
+                                barmode="group", height=400, color_discrete_sequence=["lightpink", "palegreen", ])
 
         # Quality training rating among students
-        std_rate_training = sdf["how would you rate the quality of the training?"].value_counts()
-        fig_std_rate_training = px.pie(sdf, values=std_rate_training, names=std_rate_training.index, 
-                                    hole=0.2, color=std_rate_training.index, color_discrete_map={'Very Good':'lightblue',
-                                        'Moderate':'cyan',
-                                        'Good':'yellow',
-                                        'Excellent':'darkblue'}, height=400)
+        std_rate_training = sdf["how would you rate the quality of the training?"].value_counts(
+        )
+        fig_std_rate_training = px.pie(sdf, values=std_rate_training, names=std_rate_training.index,
+                                       hole=0.2, color=std_rate_training.index, 
+                                       color_discrete_map={'Very Good': 'lightblue','Moderate': 'cyan',
+                                                'Good': 'yellow','Excellent': 'darkblue'}, height=400)
         fig_std_rate_training.update_traces(textinfo='percent+label',)
-
-        # Overall Training Performance Score
-        train_ = sdf.groupby("gender")["training_performance_score"].mean().reset_index()
-        fig_train = px.bar(train_, x='gender', y='training_performance_score', color='training_performance_score', 
-            text=train_['training_performance_score'].apply(lambda x: '{0:1.2f}%'.format(x)), 
-            height=400, color_discrete_sequence=["deeppink","palegreen",])
-                
-
-        return [dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
-        dcc.Graph(id="fig3", figure=fig_std_udt,), dcc.Graph(id="fig4", figure=fig_std_part,),
-        dcc.Graph(id="fig5", figure=fig_std_recommend,),dcc.Graph(id="fig6", figure=fig_std_further,), 
-        dcc.Graph(id="fig7", figure=fig_std_choose,),dcc.Graph(id="fig8", figure=fig_std_rate_training,),dcc.Graph(id="fig9", figure=fig_train,)]
+    
+    return [dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
+            dcc.Graph(id="fig3", figure=fig_std_udt,), dcc.Graph(
+                id="fig4", figure=fig_std_part,),
+            dcc.Graph(id="fig5", figure=fig_std_recommend,), dcc.Graph(
+                id="fig6", figure=fig_std_further,),
+            dcc.Graph(id="fig7", figure=fig_std_choose,), dcc.Graph(id="fig8", figure=fig_std_rate_training,),]
