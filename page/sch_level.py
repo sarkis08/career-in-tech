@@ -26,10 +26,8 @@ layout = dbc.Container([
                 dcc.Dropdown(
                     id='schname-dpdn',
                     placeholder="Select School",
-                    value=None,
-                    clearable=True,
-                    persistence=True,
-                    persistence_type='session',
+                    value="Albert Academy",
+                    clearable=False,
                     options=[{'label': x, 'value': x}
                              for x in sorted(df_.schoolname.unique())]
                 )
