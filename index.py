@@ -15,7 +15,7 @@ navbar = dbc.Navbar(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src=DSTI_LOGO, height="30px")),
-                        dbc.Col(dbc.NavbarBrand("CAREERS IN TECH", className="ms-2")),
+                        dbc.Col(dbc.NavbarBrand("CAREERS IN TECH; HOW TO GET STARTED PROGRAM", className="ms-2")),
                     ],
                     align="center",
                     className="g-0",

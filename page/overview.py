@@ -16,7 +16,7 @@ layout = dbc.Container([
 
     html.Div([
         html.Br(),
-        html.H2("SCHOOL LEVEL FEEDBACK ANALYSIS",
+        html.H2("STUDENT FEEDBACK ANALYSIS",
                 style={"textAlign": "center"}),
         dbc.Row([
             html.H3("Filtering"),
@@ -78,7 +78,7 @@ layout = dbc.Container([
                                     html.H4({}, id="tl_perf",
                                             className="card-title",
                                             style={"textAlign": "center"}),
-                                    html.Small("Measures the overall effectiveness and success of the seminar based on students' feedbacks. It is the percentage of students who responded positively to survey questions."),
+                                    html.Small("Measures the overall effectiveness and success of the seminar based on students' feedback. It is the percentage of students who responded positively to survey questions."),
                                 ]
                             ),
                         ],
@@ -93,7 +93,7 @@ layout = dbc.Container([
         dbc.Row(
             [
 
-                html.H5("Did students learn anything from training?"),
+                html.H5("Did students learn anything from seminar?"),
 
                 dbc.Col([
                         html.Li(
@@ -105,7 +105,7 @@ layout = dbc.Container([
                         ),
                 dbc.Col([
                         html.Li(
-                            "Percentage of students who learnt/didn’t learn something new from training"),
+                            "Percentage of students who learnt/didn’t learn something new from seminar"),
                         html.Div(id='graph-container2', children=[],),
                         ],
                         width={"size": 6, },
@@ -115,9 +115,10 @@ layout = dbc.Container([
         html.Br(),
         dbc.Row(
             [
+                html.H5("How simple or interactive is the seminar?"),
                 dbc.Col([
                         html.Li(
-                            "Was the training simple enough for students to understand concepts?"),
+                            "Was the seminar simple enough for students to understand concepts?"),
                         html.Div(id='graph-container3', children=[],),
 
                         ],
@@ -125,14 +126,14 @@ layout = dbc.Container([
                         ),
                 dbc.Col([
                         html.Li(
-                            "Was the training interactive and involved a lot of participation by students?"),
+                            "Was the seminar interactive and involved a lot of participation by students?"),
                         html.Div(id='graph-container4', children=[],),
                         ],
                         width={"size": 4, },
                         ),
                 dbc.Col([
                     html.Li(
-                        "Percentage of students who would recommend training to friends and schoolmates"),
+                        "Percentage of students who would recommend seminar to friends and schoolmates"),
                     html.Div(id='graph-container5', children=[],),
 
                 ],
@@ -144,10 +145,10 @@ layout = dbc.Container([
         dbc.Row(
             [
                 html.H5(
-                    "Do students prefer further training or feel comfortable choosing a career in technology?"),
+                    "Do students prefer further seminar or feel comfortable choosing a career in technology?"),
                 dbc.Col([
                         html.Li(
-                            "Percentage of students who would like further training"),
+                            "Percentage of students who would like further seminar"),
                         html.Div(id='graph-container6', children=[],),
 
                         ],
@@ -168,7 +169,7 @@ layout = dbc.Container([
 
                 dbc.Col([
                         html.Li(
-                            "How is the Quality of the training rated?"),
+                            "How is the Quality of the seminar rated?"),
                         html.Div(id='graph-container8', children=[],),
                         ],
                         width={"size": 6, "offset": 3 },
