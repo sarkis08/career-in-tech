@@ -14,167 +14,170 @@ df_ = pd.read_csv("data/StudentFeedbackForm_May.csv")
 
 layout = dbc.Container([
 
-    html.Div([
-        html.Br(),
-        html.H2("STUDENT FEEDBACK ANALYSIS",
-                style={"textAlign": "center"}),
-        dbc.Row([
-            html.H3("Filtering"),
+    dbc.Spinner(children=[
+        html.Div([
+            html.Br(),
+            html.H2("STUDENT FEEDBACK ANALYSIS",
+                    style={"textAlign": "center"}),
+            dbc.Row([
+                html.H3("Filtering"),
 
-            dbc.Col([
-                html.Pre(children="School Name", style={"fontSize": "100%"}),
-                dcc.Dropdown(
-                    id='schname-dpdn',
-                    value="all_values",
-                    clearable=False,
-                    options=[{'label': "All Schools", 'value': 'all_values'}] + [{'label': x, 'value': x}
-                             for x in sorted(df_.schoolname.unique())]
-                )
-            ], width={"size": 4}),
-
-            dbc.Col([
-                html.Pre(children="Class", style={"fontSize": "100%"}),
-                dcc.Dropdown(
-                    id='class-dpdn',
-                    placeholder="Select Class",
-                    clearable=True,
-                    persistence=True,
-                    multi=True,
-                    persistence_type='session',
-                    value=[],
-                    options=[],
-
-                )
-            ], width={"size": 4}),
-        ], ),  # end of row
-        html.Br(),
-        html.Br(),
-        dbc.Row([
                 dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader("Total Participated Students"),
-                            dbc.CardBody(
-                                [
-                                    html.H4({}, id="tl_std",
-                                            className="card-title",
-                                            style={"textAlign": "center"}),
-                                    html.Small("Both Survey and Participated Students"),
-                                ]
+                    html.Pre(children="School Name", style={"fontSize": "100%"}),
+                    dcc.Dropdown(
+                        id='schname-dpdn',
+                        value="all_values",
+                        clearable=False,
+                        options=[{'label': "All Schools", 'value': 'all_values'}] + [{'label': x, 'value': x}
+                                for x in sorted(df_.schoolname.unique())],
+                        style={"text-color": "black !important"},
+                    )
+                ], width={"size": 4}),
+
+                dbc.Col([
+                    html.Pre(children="Class", style={"fontSize": "100%"}),
+                    dcc.Dropdown(
+                        id='class-dpdn',
+                        placeholder="Select Class",
+                        clearable=True,
+                        persistence=True,
+                        multi=True,
+                        persistence_type='session',
+                        value=[],
+                        options=[],
+
+                    )
+                ], width={"size": 4}),
+            ], ),  # end of row
+            html.Br(),
+            html.Br(),
+            dbc.Row([
+                    dbc.Col([
+                        dbc.Card(
+                            [
+                                dbc.CardHeader("Total Participated Students"),
+                                dbc.CardBody(
+                                    [
+                                        html.H4({}, id="tl_std",
+                                                className="card-title",
+                                                style={"textAlign": "center"}),
+                                        html.Small("Both Survey and Participated Students"),
+                                    ]
+                                ),
+                            ],
+                            color="success",
+                            outline=True,
+
+                        )],
+                        width={'size': 4, }),
+                    
+                    dbc.Col([
+                        dbc.Card(
+                            [
+                                dbc.CardHeader("Overall Seminar Performance Score"),
+                                dbc.CardBody(
+                                    [
+                                        html.H4({}, id="percent_perf",
+                                                className="card-title",
+                                                style={"textAlign": "center"}),
+                                        html.Small("Measures the overall effectiveness and success of the seminar based on students' feedback. It is the percentage of students who responded positively to survey questions."),
+                                    ]
+                                ),
+                            ],
+                            color="success",
+                            outline=True,
+
+                        )],
+                        width={'size': 4, }),
+                ]),
+            html.Br(),
+            html.Br(),
+            dbc.Row(
+                [
+
+                    html.H5("Did students learn anything from seminar?"),
+
+                    dbc.Col([
+                            html.Li(
+                                "Percentage of students who heard/never heard about data science before."),
+                            html.Div(id='graph-container1', children=[],),
+
+                            ],
+                            width={"size": 6, },
                             ),
-                        ],
-                        color="success",
-                        outline=True,
-
-                    )],
-                    width={'size': 4, }),
-                
-                dbc.Col([
-                    dbc.Card(
-                        [
-                            dbc.CardHeader("Overall Seminar Performance Score"),
-                            dbc.CardBody(
-                                [
-                                    html.H4({}, id="percent_perf",
-                                            className="card-title",
-                                            style={"textAlign": "center"}),
-                                    html.Small("Measures the overall effectiveness and success of the seminar based on students' feedback. It is the percentage of students who responded positively to survey questions."),
-                                ]
+                    dbc.Col([
+                            html.Li(
+                                "Percentage of students who learnt/didn’t learn something new from seminar"),
+                            html.Div(id='graph-container2', children=[],),
+                            ],
+                            width={"size": 6, },
                             ),
-                        ],
-                        color="success",
-                        outline=True,
+                ],),
+            html.Hr(),
+            html.Br(),
+            dbc.Row(
+                [
+                    html.H5("How simple or interactive is the seminar?"),
+                    dbc.Col([
+                            html.Li(
+                                "Was the seminar simple enough for students to understand concepts?"),
+                            html.Div(id='graph-container3', children=[],),
 
-                    )],
-                    width={'size': 4, }),
-            ]),
-        html.Br(),
-        html.Br(),
-        dbc.Row(
-            [
-
-                html.H5("Did students learn anything from seminar?"),
-
-                dbc.Col([
+                            ],
+                            width={"size": 4, },
+                            ),
+                    dbc.Col([
+                            html.Li(
+                                "Was the seminar interactive and involved a lot of participation by students?"),
+                            html.Div(id='graph-container4', children=[],),
+                            ],
+                            width={"size": 4, },
+                            ),
+                    dbc.Col([
                         html.Li(
-                            "Percentage of students who heard/never heard about data science before."),
-                        html.Div(id='graph-container1', children=[],),
+                            "Percentage of students who would recommend seminar to friends and schoolmates"),
+                        html.Div(id='graph-container5', children=[],),
 
-                        ],
-                        width={"size": 6, },
-                        ),
-                dbc.Col([
-                        html.Li(
-                            "Percentage of students who learnt/didn’t learn something new from seminar"),
-                        html.Div(id='graph-container2', children=[],),
-                        ],
-                        width={"size": 6, },
-                        ),
-            ],),
-        html.Hr(),
-        html.Br(),
-        dbc.Row(
-            [
-                html.H5("How simple or interactive is the seminar?"),
-                dbc.Col([
-                        html.Li(
-                            "Was the seminar simple enough for students to understand concepts?"),
-                        html.Div(id='graph-container3', children=[],),
-
-                        ],
+                    ],
                         width={"size": 4, },
-                        ),
-                dbc.Col([
-                        html.Li(
-                            "Was the seminar interactive and involved a lot of participation by students?"),
-                        html.Div(id='graph-container4', children=[],),
-                        ],
-                        width={"size": 4, },
-                        ),
-                dbc.Col([
-                    html.Li(
-                        "Percentage of students who would recommend seminar to friends and schoolmates"),
-                    html.Div(id='graph-container5', children=[],),
+                    ),
+                ],),
+            html.Hr(),
+            html.Br(),
+            dbc.Row(
+                [
+                    html.H5(
+                        "Do students prefer further seminar or feel comfortable choosing a career in technology?"),
+                    dbc.Col([
+                            html.Li(
+                                "Percentage of students who would like further seminar"),
+                            html.Div(id='graph-container6', children=[],),
 
-                ],
-                    width={"size": 4, },
-                ),
-            ],),
-        html.Hr(),
-        html.Br(),
-        dbc.Row(
-            [
-                html.H5(
-                    "Do students prefer further seminar or feel comfortable choosing a career in technology?"),
-                dbc.Col([
-                        html.Li(
-                            "Percentage of students who would like further seminar"),
-                        html.Div(id='graph-container6', children=[],),
+                            ],
+                            width={"size": 6, },
+                            ),
+                    dbc.Col([
+                            html.Li(
+                                "Percentage of Students who feel comfortable choosing a career in technology"),
+                            html.Div(id='graph-container7', children=[],),
+                            ],
+                            width={"size": 6, },
+                            ),
+                ],),
+            html.Hr(),
+            html.Br(),
+            dbc.Row(
+                [
 
-                        ],
-                        width={"size": 6, },
-                        ),
-                dbc.Col([
-                        html.Li(
-                            "Percentage of Students who feel comfortable choosing a career in technology"),
-                        html.Div(id='graph-container7', children=[],),
-                        ],
-                        width={"size": 6, },
-                        ),
-            ],),
-        html.Hr(),
-        html.Br(),
-        dbc.Row(
-            [
-
-                dbc.Col([
-                        html.Li(
-                            "How is the Quality of the seminar rated?"),
-                        html.Div(id='graph-container8', children=[],),
-                        ],
-                        width={"size": 6, "offset": 3 },
-                        ),
-            ],),
+                    dbc.Col([
+                            html.Li(
+                                "How is the Quality of the seminar rated?"),
+                            html.Div(id='graph-container8', children=[],),
+                            ],
+                            width={"size": 6, "offset": 3 },
+                            ),
+               ],),
+        ]),
     ]),
     html.Div()
 ])

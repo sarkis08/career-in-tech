@@ -1,6 +1,7 @@
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+import dash_loading_spinners as dls
 
 from page import overview
 from app import app, server
@@ -41,12 +42,17 @@ navbar = dbc.Navbar(
 
 content = html.Div(id="page-content", children=[],)
 
-
-app.layout = html.Div([
-    dcc.Location(id="url"),
-    navbar,
-    content])
-
+# Add a hash loading spinner
+app.layout = dls.Hash(
+    html.Div([
+        dcc.Location(id="url"),
+        navbar,
+        content]),
+    color="#435278",
+    speed_multiplier=2,
+    size=100,
+    fullscreen=True
+)
 
 @app.callback(Output('page-content', 'children'), [Input('url', 'pathname')]
               )
@@ -73,4 +79,4 @@ def render_page_content(pathname):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)
