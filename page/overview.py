@@ -1,3 +1,4 @@
+from tkinter.tix import TList
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 import dash
@@ -56,7 +57,7 @@ layout = dbc.Container([
                             dbc.CardHeader("Total Participated Students"),
                             dbc.CardBody(
                                 [
-                                    html.H4(df_.shape[0],
+                                    html.H4({}, id="tl_std",
                                             className="card-title",
                                             style={"textAlign": "center"}),
                                     html.Small("Both Survey and Participated Students"),
@@ -75,7 +76,7 @@ layout = dbc.Container([
                             dbc.CardHeader("Overall Seminar Performance Score"),
                             dbc.CardBody(
                                 [
-                                    html.H4({}, id="tl_perf",
+                                    html.H4({}, id="percent_perf",
                                             className="card-title",
                                             style={"textAlign": "center"}),
                                     html.Small("Measures the overall effectiveness and success of the seminar based on students' feedback. It is the percentage of students who responded positively to survey questions."),
@@ -198,7 +199,8 @@ def set_classes_options(chosen_schname):
 
 
 @app.callback(
-    [Output('tl_perf','children'),
+    [Output('tl_std','children'),
+     Output('percent_perf','children'),
      Output('graph-container1', 'children'),
      Output('graph-container2', 'children'),
      Output('graph-container3', 'children'),
@@ -215,8 +217,12 @@ def update_grpah(selected_schname, selected_class):
     dff = df_.copy()
 
     if selected_schname == "all_values" :
-        totl_perf = dff["training_performance_score"].mean().round(2)
-        totl_perf = totl_perf.astype(str) + " %"
+
+        # total students participated
+        std_total = dff.shape[0]
+        # Overall Percentage Performance
+        percent_perf = dff["training_performance_score"].mean().round(2)
+        percent_perf = percent_perf.astype(str) + " %"
 
         std_df = dff[["gender", "have you heard/or learnt  about data science prior to this session?"]]
         #print("All",std_df[:5])
@@ -306,9 +312,11 @@ def update_grpah(selected_schname, selected_class):
 
         sdf = dff[(dff["schoolname"] == selected_schname) & (dff['class'].isin(selected_class))]
         # print(sdf.head())
+        # total students participated at school level
+        std_total = sdf.shape[0]
         # Overall Training Performance
-        totl_perf = sdf["training_performance_score"].mean().round(2)
-        totl_perf = totl_perf.astype(str) + " %"
+        percent_perf = sdf["training_performance_score"].mean().round(2)
+        percent_perf = percent_perf.astype(str) + " %"
 
         std_df = sdf[[
             "gender", "have you heard/or learnt  about data science prior to this session?"]]
@@ -414,7 +422,7 @@ def update_grpah(selected_schname, selected_class):
                                                 'Good': 'yellow','Excellent': 'darkblue'}, height=400)
         fig_std_rate_training.update_traces(textinfo='percent+label',)
 
-    return [totl_perf, dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
+    return [std_total, percent_perf, dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
             dcc.Graph(id="fig3", figure=fig_std_udt,), dcc.Graph(
                 id="fig4", figure=fig_std_part,),
             dcc.Graph(id="fig5", figure=fig_std_recommend,), dcc.Graph(
