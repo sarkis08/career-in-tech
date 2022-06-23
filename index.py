@@ -50,7 +50,7 @@ app.layout = dls.Hash(
         content]),
     color="#435278",
     speed_multiplier=2,
-    size=100,
+    size=50,
     fullscreen=True
 )
 
