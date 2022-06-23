@@ -221,7 +221,8 @@ def update_grpah(selected_schname, selected_class):
     if selected_schname == "all_values" :
 
         # total students participated
-        std_total = dff.shape[0]
+        female, male = dff["gender"].value_counts()
+        total_gender = (f"Female: {female} | Male: {male}")
         # Overall Percentage Performance
         percent_perf = dff["training_performance_score"].mean().round(2)
         percent_perf = percent_perf.astype(str) + " %"
@@ -238,7 +239,7 @@ def update_grpah(selected_schname, selected_class):
 
         # percent of student learn new thing
         std_lt_df = dff[["gender", "did you learn anything new? "]]
-        print("All",std_lt_df[:5])
+        #print("All",std_lt_df[:5])
         std_learnt = std_lt_df.groupby(['gender', 'did you learn anything new? ']).size().reset_index()
         std_learnt['percentage'] = std_lt_df.groupby(['gender', 'did you learn anything new? ']).size().groupby(level=0).apply(lambda x: 100 * x / float(x.sum())).values
         std_learnt.columns = ['gender', 'variables', 'counts', 'percentage']
@@ -315,7 +316,19 @@ def update_grpah(selected_schname, selected_class):
         sdf = dff[(dff["schoolname"] == selected_schname) & (dff['class'].isin(selected_class))]
         # print(sdf.head())
         # total students participated at school level
-        std_total = sdf.shape[0]
+        if selected_schname == "Albert Academy":
+             dfm = sdf[(sdf["gender"].str.contains("Male")) & (sdf["schoolname"] == selected_schname)]
+             gender = dfm["gender"].value_counts()
+             total_gender = (f"Male: {gender[0]}")
+        elif selected_schname == "Methodist Girls High School":
+             dfm = sdf[(sdf["gender"].str.contains("Female")) & (sdf["schoolname"] == selected_schname)]
+             gender = dfm["gender"].value_counts()
+             total_gender = (f"Female: {gender[0]}")
+        else:
+            female, male = sdf["gender"].value_counts()
+            total_gender = (f"Female: {female} | Male: {male}")
+
+        
         # Overall Training Performance
         percent_perf = sdf["training_performance_score"].mean().round(2)
         percent_perf = percent_perf.astype(str) + " %"
@@ -424,7 +437,7 @@ def update_grpah(selected_schname, selected_class):
                                                 'Good': 'yellow','Excellent': 'darkblue'}, height=400)
         fig_std_rate_training.update_traces(textinfo='percent+label',)
 
-    return [std_total, percent_perf, dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
+    return [total_gender, percent_perf, dcc.Graph(id="fig1", figure=fig_sch_hd,), dcc.Graph(id="fig2", figure=fig_std_learnt,),
             dcc.Graph(id="fig3", figure=fig_std_udt,), dcc.Graph(
                 id="fig4", figure=fig_std_part,),
             dcc.Graph(id="fig5", figure=fig_std_recommend,), dcc.Graph(
