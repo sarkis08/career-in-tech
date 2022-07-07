@@ -10,7 +10,7 @@ import plotly.express as px
 from app import app
 
 # import data
-df_ = pd.read_csv("data/StudentFeedbackForm_May.csv")
+df_ = pd.read_csv("data/student_feedbacks.csv")
 
 layout = dbc.Container([
 
@@ -324,6 +324,10 @@ def update_grpah(selected_schname, selected_class):
              dfm = sdf[(sdf["gender"].str.contains("Female")) & (sdf["schoolname"] == selected_schname)]
              gender = dfm["gender"].value_counts()
              total_gender = (f"Female: {gender[0]}")
+        elif selected_schname == "Methodist Boys High School":
+             dfm = sdf[(sdf["gender"].str.contains("Male")) & (sdf["schoolname"] == selected_schname)]
+             gender = dfm["gender"].value_counts()
+             total_gender = (f"Male: {gender[0]}")
         else:
             female, male = sdf["gender"].value_counts()
             total_gender = (f"Female: {female} | Male: {male}")
